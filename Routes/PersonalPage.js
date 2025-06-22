@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken"
 import { db } from '../Models/db.js';
 //import User from "../Models/User"
 
+function createPersonalPageRoutes(io) {
+
 const PersonalPageRoutes = express.Router();
 
 /*
@@ -66,4 +68,8 @@ PersonalPageRoutes.post("/", (req, res) => {
 
 
 
-export default PersonalPageRoutes;
+return PersonalPageRoutes;
+
+}
+
+export default createPersonalPageRoutes;

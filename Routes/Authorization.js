@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken"
 import { db } from '../Models/db.js';
 //import User from "../Models/User"
 
+function createAuthorizationRoutes(io) {
+
 const AuthorizationRoutes = express.Router();
 
 /*
@@ -61,4 +63,7 @@ AuthorizationRoutes.post("/signup", (req, res) => {
 });
 
 
-export default AuthorizationRoutes;
+return AuthorizationRoutes;
+}
+
+export default createAuthorizationRoutes;

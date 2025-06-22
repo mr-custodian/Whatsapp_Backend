@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { db } from '../Models/db.js';
 //import User from "../Models/User"
 
+function createFrontPageRoutes(io) {
 const FrontPageRoutes = express.Router();
 
 /*
@@ -92,4 +93,8 @@ FrontPageRoutes.post("/signup", (req, res) => {
 });
 
 
-export default FrontPageRoutes;
+return FrontPageRoutes;
+
+}
+
+export default createFrontPageRoutes; // ✅ export as function now

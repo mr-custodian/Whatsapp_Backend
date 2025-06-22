@@ -1,11 +1,13 @@
 import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
-import AuthorizationRoutes from './Routes/Authorization.js';
-import FrontPageRoutes from './Routes/FrontPage.js';
-import PersonalPageRoutes from './Routes/PersonalPage.js';
+import createAuthorizationRoutes from './Routes/Authorization.js';
+import createFrontPageRoutes from './Routes/FrontPage.js';
+import createPersonalPageRoutes from './Routes/PersonalPage.js';
 import http from 'http';
 import { db } from './Models/db.js'; 
+
+import { Server } from 'socket.io'; // ✅ ADDED: import socket.io
 
 const app = express();
 app.use(express.json());
@@ -18,7 +20,30 @@ const allowedOrigins = [
 ];
 
 
+// ✅ ADDED: Socket.IO initialization
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 
+// ✅ ADDED: Socket.IO event handling
+io.on("connection", (socket) => {
+  console.log("🟢 User connected:", socket.id);
+
+  socket.on("send-message", (data) => {
+    console.log("📩 Message received via socket:", data);
+
+    // Broadcast to all other users
+    socket.broadcast.emit("message-received", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 User disconnected:", socket.id);
+  });
+});
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -51,11 +76,11 @@ app.use((req, res, next) => {
 });
 
 
+app.set("io", io); // ✅ Attach socket instance to Express app
 
-
-app.use('/api/Authorization', AuthorizationRoutes);
-app.use('/api/FrontPage/',FrontPageRoutes);
-app.use('/api/PersonalPage/',PersonalPageRoutes);
+app.use('/api/Authorization', createAuthorizationRoutes(io));
+app.use('/api/FrontPage/',createFrontPageRoutes(io));
+app.use('/api/PersonalPage/',createPersonalPageRoutes(io));
 
 
 
